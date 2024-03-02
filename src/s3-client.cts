@@ -1,7 +1,6 @@
 import { Upload } from "@aws-sdk/lib-storage";
-import { AbortMultipartUploadCommandOutput, BucketLocationConstraint, CompleteMultipartUploadCommandOutput, CreateBucketCommand, CreateBucketCommandInput, CreateBucketCommandOutput, DeleteBucketCommand, DeleteBucketCommandInput, DeleteBucketCommandOutput, DeleteObjectCommand, DeleteObjectCommandInput, DeletePublicAccessBlockCommand, GetObjectCommand, GetObjectCommandInput, ObjectCannedACL, PutObjectAclCommand, S3Client } from "@aws-sdk/client-s3";
+import { AbortMultipartUploadCommandOutput, BucketLocationConstraint, CompleteMultipartUploadCommandOutput, CreateBucketCommand, CreateBucketCommandInput, CreateBucketCommandOutput, DeleteBucketCommand, DeleteBucketCommandOutput, DeleteObjectCommand, DeleteObjectCommandInput, DeletePublicAccessBlockCommand, GetObjectCommand, GetObjectCommandInput, ObjectCannedACL, PutObjectAclCommand, S3Client } from "@aws-sdk/client-s3";
 import { Readable } from "node:stream";
-import { createWriteStream } from "node:fs";
 
 export type ObjectBody = string | Uint8Array | Buffer | Readable;
 export type ObjectAccess = ObjectCannedACL;
