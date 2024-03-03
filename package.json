@@ -6,7 +6,8 @@
   "types": "dist/index.d.cts",
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc -w"
+    "build:watch": "tsc -w",
+    "test": "tsc"
   },
   "author": "",
   "license": "ISC",
