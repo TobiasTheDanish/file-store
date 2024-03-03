@@ -1,11 +1,12 @@
 {
-  "name": "file-store",
-  "version": "0.0.1",
+  "name": "file-storing",
+  "version": "0.0.2",
   "description": "A library for integration with AWS S3",
   "main": "dist/index.cjs",
-  "types": "dist/index.d.ts",
+  "types": "dist/index.d.cts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "build:watch": "tsc -w"
   },
   "author": "",
   "license": "ISC",
@@ -15,7 +16,8 @@
     "@aws-sdk/lib-storage": "^3.441.0"
   },
   "files": [
-    "/dist"
+    "/dist",
+    "/src"
   ],
   "devDependencies": {
     "@types/node": "^20.8.10"
