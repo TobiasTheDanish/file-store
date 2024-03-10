@@ -100,6 +100,8 @@ export interface ResponseMetadata {
 export interface UploadSuccesResponse {
 	succes: boolean,
 	$metadata: ResponseMetadata,
+	ETag?: string,
+	ServerSideEncryption?: string,
 	Key?: string,
 	Bucket?: string,
 	Location?: string,
@@ -108,6 +110,11 @@ export interface UploadSuccesResponse {
 export interface UploadFailedResponse {
 	succes: boolean,
 	$metadata: ResponseMetadata,
+	ETag: undefined,
+	ServerSideEncryption: undefined,
+	Key: undefined,
+	Bucket: undefined,
+	Location: undefined,
 }
 
 export interface S3Config {
