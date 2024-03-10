@@ -1,6 +1,9 @@
 # File-storing
 
-DISCLAIMER: This is a work in progress, and is not production ready.
+### DISCLAIMER: This is a work in progress, and is not production ready.
+
+### Changes
+- upload function now also returns a succes bool, which can be used to check if upload was succesfull
 
 A library for interacting with and creating AWS S3 buckets.
 

@@ -1,5 +1,5 @@
 import { Progress, Upload } from "@aws-sdk/lib-storage";
-import { AbortMultipartUploadCommandOutput, BucketLocationConstraint, CompleteMultipartUploadCommandOutput, CreateBucketCommand, CreateBucketCommandInput, CreateBucketCommandOutput, DeleteBucketCommand, DeleteBucketCommandOutput, DeleteObjectCommand, DeleteObjectCommandInput, DeletePublicAccessBlockCommand, GetObjectCommand, GetObjectCommandInput, ObjectCannedACL, PutObjectAclCommand, S3Client } from "@aws-sdk/client-s3";
+import { BucketLocationConstraint, CompleteMultipartUploadCommandOutput, CreateBucketCommand, CreateBucketCommandInput, CreateBucketCommandOutput, DeleteBucketCommand, DeleteBucketCommandOutput, DeleteObjectCommand, DeleteObjectCommandInput, DeletePublicAccessBlockCommand, GetObjectCommand, GetObjectCommandInput, ObjectCannedACL, PutObjectAclCommand, S3Client } from "@aws-sdk/client-s3";
 import { Readable } from "node:stream";
 
 export type CreateBucketOutput = CreateBucketCommandOutput;
@@ -68,6 +68,48 @@ export interface Credentials {
 	sessionToken?: string,
 }
 
+export interface ResponseMetadata {
+    /**
+     * The status code of the last HTTP response received for this operation.
+     */
+    httpStatusCode?: number;
+    /**
+     * A unique identifier for the last request sent for this operation. Often
+     * requested by AWS service teams to aid in debugging.
+     */
+    requestId?: string;
+    /**
+     * A secondary identifier for the last request sent. Used for debugging.
+     */
+    extendedRequestId?: string;
+    /**
+     * A tertiary identifier for the last request sent. Used for debugging.
+     */
+    cfId?: string;
+    /**
+     * The number of times this operation was attempted.
+     */
+    attempts?: number;
+    /**
+     * The total amount of time (in milliseconds) that was spent waiting between
+     * retry attempts.
+     */
+    totalRetryDelay?: number;
+}
+
+export interface UploadSuccesResponse {
+	succes: boolean,
+	$metadata: ResponseMetadata,
+	Key?: string,
+	Bucket?: string,
+	Location?: string,
+}
+
+export interface UploadFailedResponse {
+	succes: boolean,
+	$metadata: ResponseMetadata,
+}
+
 export interface S3Config {
 	region: BucketRegion,
 	credentials: Credentials,
@@ -112,7 +154,7 @@ export const Client = class {
 		return this.s3.send(cmd);
 	}
 
-	async upload(config: UploadConfig, cb?: ((progress: Progress) => void) ): Promise<AbortMultipartUploadCommandOutput | CompleteMultipartUploadCommandOutput> {
+	async upload(config: UploadConfig, cb?: ((progress: Progress) => void) ): Promise<UploadFailedResponse | UploadSuccesResponse> {
 		const uploadClient = new Upload({
 			client: this.s3,
 			params: {
@@ -123,13 +165,21 @@ export const Client = class {
 			},
 		});
 
-		uploadClient.on("httpUploadProgress", cb);
+		if (cb) {
+			uploadClient.on("httpUploadProgress", cb);
+		}
 
 		const res = await uploadClient.done();
 
 		const putACLCmd = new PutObjectAclCommand({Bucket: config.bucket, Key: config.key, ACL: config.objectAccess});
 		return await this.s3.send(putACLCmd)
-			.then(() => res)
+			.then(() => {
+				return {
+					succes: res.$metadata.httpStatusCode == 200,
+					$metadata: res.$metadata,
+					...res,
+				}
+			})
 			.catch((e) => {
 				return Promise.reject({message: `Could not set access level for object: '${config.key}' in bucket: '${config.bucket}'`, error: e});
 		})
